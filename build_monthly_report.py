@@ -39,6 +39,7 @@ BASE_DIR = Path(__file__).resolve().parent
 DATA_DIR = BASE_DIR / "data"
 FIXTURES_DIR = BASE_DIR / "fixtures"
 SITE_DIR = BASE_DIR / "site"
+PREVIEW_DIR = BASE_DIR / "preview"
 IDEAS_DATA_DIR = DATA_DIR / "ideas"
 
 
@@ -341,9 +342,12 @@ def render_report_html(report_data: Dict[str, Any], previous_reports: List[Dict[
     )
 
 
-def build_monthly_report(ym: Optional[str] = None, use_fixtures: bool = False):
+def build_monthly_report(ym: Optional[str] = None, use_fixtures: bool = False, output_dir: Optional[Path] = None):
     config = load_config()
     current_ym = ym or datetime.utcnow().strftime("%Y-%m")
+
+    # Determine destination directory
+    dest_dir = output_dir if output_dir is not None else (PREVIEW_DIR if use_fixtures else SITE_DIR)
 
     # Load cases
     cases_dir = FIXTURES_DIR / "cases" if use_fixtures else DATA_DIR / "cases"
@@ -373,7 +377,7 @@ def build_monthly_report(ym: Optional[str] = None, use_fixtures: bool = False):
     previous_reports = [r for r in get_previous_reports(ideas_data_dir) if r.get("report_month") != current_ym]
 
     # Generate HTML page for this month
-    month_dir = SITE_DIR / "ideas" / current_ym
+    month_dir = dest_dir / "ideas" / current_ym
     month_dir.mkdir(parents=True, exist_ok=True)
     report_html = render_report_html(report_data, previous_reports, config, is_fixture=use_fixtures)
 
@@ -408,8 +412,8 @@ def build_monthly_report(ym: Optional[str] = None, use_fixtures: bool = False):
         """)
     archive_content.append("</div>")
 
-    (SITE_DIR / "ideas").mkdir(parents=True, exist_ok=True)
-    with open(SITE_DIR / "ideas" / "index.html", "w", encoding="utf-8") as f:
+    (dest_dir / "ideas").mkdir(parents=True, exist_ok=True)
+    with open(dest_dir / "ideas" / "index.html", "w", encoding="utf-8") as f:
         f.write(render_html_page(
             "Monthly Ideas Reports Archive",
             "Archive of factual monthly research reports documenting real business outcomes across India.",

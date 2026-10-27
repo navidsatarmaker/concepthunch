@@ -26,6 +26,7 @@ BASE_DIR = Path(__file__).resolve().parent
 DATA_DIR = BASE_DIR / "data"
 FIXTURES_DIR = BASE_DIR / "fixtures"
 SITE_DIR = BASE_DIR / "site"
+PREVIEW_DIR = BASE_DIR / "preview"
 CONFIG_PATH = BASE_DIR / "config.json"
 
 
@@ -148,14 +149,36 @@ def render_html_page(title: str, description: str, canonical_path: str, content:
 """
 
 
-def build_site(use_fixtures: bool = False):
+def build_site(use_fixtures: bool = False, output_dir: Optional[Path] = None):
     config = load_config()
 
-    # Clean existing generated pages in site/ before regenerating
-    for sub in ["cases", "types", "ideas"]:
-        target_dir = SITE_DIR / sub
-        if target_dir.exists():
-            shutil.rmtree(target_dir)
+    # Determine destination directory
+    dest_dir = output_dir if output_dir is not None else (PREVIEW_DIR if use_fixtures else SITE_DIR)
+
+    # In production build (or target dir clean), delete previously generated pages before writing
+    if dest_dir.exists():
+        for item in dest_dir.iterdir():
+            if item.is_dir():
+                if item.name not in ["css", "js"]:
+                    shutil.rmtree(item)
+            elif item.name in ["index.html", "sitemap.xml"]:
+                item.unlink()
+    else:
+        dest_dir.mkdir(parents=True, exist_ok=True)
+
+    # Ensure static assets (css, js, sw.js, manifest.json, robots.txt) are copied if writing to preview/ or custom dir
+    if dest_dir != SITE_DIR:
+        dest_dir.mkdir(parents=True, exist_ok=True)
+        for asset in ["css", "js", "sw.js", "manifest.json", "robots.txt"]:
+            src = SITE_DIR / asset
+            dst = dest_dir / asset
+            if src.exists():
+                if src.is_dir():
+                    if dst.exists():
+                        shutil.rmtree(dst)
+                    shutil.copytree(src, dst)
+                else:
+                    shutil.copy2(src, dst)
 
     # Load business types
     types_path = DATA_DIR / "business_types.json"
@@ -266,8 +289,8 @@ def build_site(use_fixtures: bool = False):
             """)
         home_content.append("</div>")
 
-    (SITE_DIR).mkdir(parents=True, exist_ok=True)
-    with open(SITE_DIR / "index.html", "w", encoding="utf-8") as f:
+    (dest_dir).mkdir(parents=True, exist_ok=True)
+    with open(dest_dir / "index.html", "w", encoding="utf-8") as f:
         f.write(render_html_page(
             "Documented Outcomes of Businesses in India",
             "Researched factual numbers on capital, operating costs, revenues, and outcomes of real businesses across India.",
@@ -282,7 +305,7 @@ def build_site(use_fixtures: bool = False):
         slug = bt["slug"]
         summ = type_summaries.get(slug, {})
         type_cases = [c for c in cases if c.get("business_type") == slug]
-        type_dir = SITE_DIR / "types" / slug
+        type_dir = dest_dir / "types" / slug
         type_dir.mkdir(parents=True, exist_ok=True)
 
         t_content = [f"<h1>{bt['name']}</h1>", f"<p>{bt['description']}</p>"]
@@ -353,7 +376,7 @@ def build_site(use_fixtures: bool = False):
     # 3. Individual Case Pages
     for c in cases:
         cid = c["id"]
-        case_dir = SITE_DIR / "cases" / cid
+        case_dir = dest_dir / "cases" / cid
         case_dir.mkdir(parents=True, exist_ok=True)
         status = c.get("status", "unknown")
 
@@ -427,7 +450,7 @@ def build_site(use_fixtures: bool = False):
             ))
 
     # 4. Methodology Page
-    meth_dir = SITE_DIR / "methodology"
+    meth_dir = dest_dir / "methodology"
     meth_dir.mkdir(parents=True, exist_ok=True)
     with open(meth_dir / "index.html", "w", encoding="utf-8") as f:
         f.write(render_html_page(
@@ -455,7 +478,7 @@ def build_site(use_fixtures: bool = False):
         ))
 
     # 5. About Page
-    about_dir = SITE_DIR / "about"
+    about_dir = dest_dir / "about"
     about_dir.mkdir(parents=True, exist_ok=True)
     with open(about_dir / "index.html", "w", encoding="utf-8") as f:
         f.write(render_html_page(
@@ -478,7 +501,7 @@ def build_site(use_fixtures: bool = False):
         ))
 
     # 6. Privacy Policy Page
-    privacy_dir = SITE_DIR / "privacy"
+    privacy_dir = dest_dir / "privacy"
     privacy_dir.mkdir(parents=True, exist_ok=True)
     with open(privacy_dir / "index.html", "w", encoding="utf-8") as f:
         f.write(render_html_page(
@@ -495,7 +518,7 @@ def build_site(use_fixtures: bool = False):
         ))
 
     # 7. Disclaimer Page
-    disc_dir = SITE_DIR / "disclaimer"
+    disc_dir = dest_dir / "disclaimer"
     disc_dir.mkdir(parents=True, exist_ok=True)
     with open(disc_dir / "index.html", "w", encoding="utf-8") as f:
         f.write(render_html_page(
@@ -524,10 +547,10 @@ def build_site(use_fixtures: bool = False):
         sitemap_lines.append(f"  <url><loc>https://example.com{url}</loc><changefreq>weekly</changefreq></url>")
     sitemap_lines.append('</urlset>')
 
-    with open(SITE_DIR / "sitemap.xml", "w", encoding="utf-8") as f:
+    with open(dest_dir / "sitemap.xml", "w", encoding="utf-8") as f:
         f.write("\n".join(sitemap_lines))
 
-    print(f"Site build complete. Output written to {SITE_DIR}.")
+    print(f"Site build complete. Output written to {dest_dir}.")
 
 
 if __name__ == "__main__":
