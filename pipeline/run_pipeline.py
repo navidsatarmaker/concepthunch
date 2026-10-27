@@ -21,7 +21,7 @@ from pathlib import Path
 from typing import Dict, Any, List
 
 from pipeline.fetcher import fetch_feed_articles, fetch_article_content, clean_html_text
-from pipeline.filter import has_likely_business_numbers
+from pipeline.filter import has_likely_business_numbers, evaluate_title_and_summary
 from pipeline.extractor import extract_with_gemini
 from pipeline.quote_verifier import verify_case_quotes
 from pipeline.cross_checker import cross_check_with_groq
@@ -64,6 +64,7 @@ def has_any_numbers(case_data: Dict[str, Any]) -> bool:
 
 
 def run_pipeline(dry_run: bool = False, max_articles: int = 5):
+    sys.stdout.reconfigure(encoding="utf-8")
     print("=" * 60)
     print(f"STARTING EXTRACTION PIPELINE (dry_run={dry_run}, max_articles={max_articles})")
     print("=" * 60)
@@ -117,7 +118,13 @@ def run_pipeline(dry_run: bool = False, max_articles: int = 5):
             "own_summary": "A street-side beverage kiosk in Pune closed after 11 months of operation. Accumulated losses reached 1.8 lakh INR due to pedestrian disruption from infrastructure work."
         }
 
-        print("\nStep 2: Checking Keyword Filter...")
+        print("\nStep 1b: Evaluating candidate title and summary filter...")
+        sample_title = "Pune Street Tea Kiosk Closes Operations"
+        sample_summary = "A quick-service beverage stall launched in Pune faced severe disruption this year. Total accumulated losses reached Rs 1.8 lakh prior to closure."
+        passes_title, title_reason = evaluate_title_and_summary(sample_title, sample_summary)
+        print(f"-> Sample title/summary passes filter: {passes_title} ({title_reason})")
+
+        print("\nStep 2: Checking Keyword Filter on Article Body...")
         passes_filter = has_likely_business_numbers(article_text)
         print(f"-> Article passes keyword filter: {passes_filter}")
 
@@ -144,13 +151,37 @@ def run_pipeline(dry_run: bool = False, max_articles: int = 5):
     user_agent = config["site"]["user_agent"]
 
     articles_to_process = []
+    # Collect a broader pool from feeds so that filtering by title still yields candidates
+    feed_candidates_limit = max_articles * 5
+    raw_feed_articles = []
     for source in sources:
-        found = fetch_feed_articles(source, user_agent, processed_urls, max_articles=max_articles - len(articles_to_process))
-        articles_to_process.extend(found)
+        found = fetch_feed_articles(source, user_agent, processed_urls, max_articles=feed_candidates_limit - len(raw_feed_articles))
+        raw_feed_articles.extend(found)
+        if len(raw_feed_articles) >= feed_candidates_limit:
+            break
+
+    print(f"Found {len(raw_feed_articles)} new items across feeds. Applying title & RSS summary filter...")
+
+    skipped_by_title_filter = 0
+    for art in raw_feed_articles:
+        title = art.get("title", "")
+        summary = art.get("summary", "")
+        url = art.get("url", "")
+
+        is_accepted, reason = evaluate_title_and_summary(title, summary)
+        if not is_accepted:
+            skipped_by_title_filter += 1
+            print(f"  [SKIPPED BY TITLE FILTER] '{title[:60]}' | Reason: {reason}")
+            # Mark URL as processed so we don't repeatedly inspect the same irrelevant news item
+            processed_urls.add(url)
+            continue
+
+        print(f"  [ACCEPTED FOR SCRAPING] '{title[:60]}' | Reason: {reason}")
+        articles_to_process.append(art)
         if len(articles_to_process) >= max_articles:
             break
 
-    print(f"Found {len(articles_to_process)} candidate articles from sources.")
+    print(f"Title filter summary: {len(articles_to_process)} accepted for web fetch, {skipped_by_title_filter} candidates skipped.")
 
     for art in articles_to_process:
         url = art["url"]

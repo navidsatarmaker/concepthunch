@@ -86,12 +86,22 @@ def fetch_feed_articles(source: Dict[str, Any], user_agent: str, processed_urls:
         title_elem = item.find("title")
         title = title_elem.text.strip() if title_elem is not None and title_elem.text else ""
 
+        # Extract summary / description
+        summary_elem = item.find("description")
+        if summary_elem is None:
+            summary_elem = item.find("{http://www.w3.org/2005/Atom}summary")
+        if summary_elem is None:
+            summary_elem = item.find("{http://www.w3.org/2005/Atom}content")
+        summary_raw = summary_elem.text if summary_elem is not None and summary_elem.text else ""
+        summary_clean = clean_html_text(summary_raw)
+
         articles.append({
             "source_id": source.get("id"),
             "source_name": source.get("name"),
             "source_type": source.get("source_tier"),
             "url": link,
-            "title": title
+            "title": title,
+            "summary": summary_clean
         })
 
         if len(articles) >= max_articles:
