@@ -1,0 +1,17 @@
+{
+  "business_type": "direct-to-consumer-apparel",
+  "case_count": 0,
+  "has_sufficient_data": false,
+  "outcomes": {
+    "running": 0,
+    "shut_down": 0,
+    "acquired": 0,
+    "unknown": 0
+  },
+  "capital_invested_inr": null,
+  "monthly_cost_inr": null,
+  "revenue_inr": null,
+  "time_to_breakeven_months": null,
+  "common_failure_reasons": [],
+  "updated_at": "2026-10-27"
+}

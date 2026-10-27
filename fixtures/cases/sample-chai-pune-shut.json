@@ -1,0 +1,38 @@
+{
+  "id": "sample-chai-pune-shut",
+  "is_fixture": true,
+  "fixture_label": "SAMPLE – NOT REAL",
+  "business_name": "Sample Pune Chai Kiosk",
+  "business_type": "tea-cafe",
+  "city": "Pune",
+  "state": "Maharashtra",
+  "year_started": 2019,
+  "status": "shut_down",
+  "capital_invested_inr": 280000,
+  "capital_invested_inr_quote": "The owner deployed Rs 2.8 lakh in setting up the counter and purchasing equipment.",
+  "monthly_cost_inr": 50000,
+  "monthly_cost_inr_quote": "Monthly operating costs amounted to Rs 50,000 for rent and raw materials.",
+  "revenue_inr": 35000,
+  "revenue_period": "monthly",
+  "revenue_inr_quote": "Monthly sales peaked at Rs 35,000 before declining.",
+  "profit_or_loss_inr": -180000,
+  "profit_or_loss_inr_quote": "Total accumulated losses reached Rs 1.8 lakh prior to closure.",
+  "time_to_breakeven_months": null,
+  "time_to_breakeven_months_quote": null,
+  "what_worked": [
+    "Clean stall presentation attracted morning office commuters"
+  ],
+  "what_failed": [
+    "High initial rental deposit strained early working capital",
+    "Road widening project blocked pedestrian access for six months"
+  ],
+  "source_name": "YourStory",
+  "source_url": "https://yourstory.com/sample-pune-chai-closure",
+  "source_type": "news_reported",
+  "published_date": "2020-11-20",
+  "own_summary": "A street-side beverage kiosk in Pune closed after 11 months of operation. Accumulated losses reached 1.8 lakh INR due to infrastructure construction disrupting customer footfall.",
+  "verification": {
+    "quotes_verified": true,
+    "cross_checked": true
+  }
+}

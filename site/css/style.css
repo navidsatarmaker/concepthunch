@@ -1,0 +1,323 @@
+/* Ultra-light, clean, mobile-first CSS for Indian Business Cases */
+:root {
+  --bg-color: #fcfcfc;
+  --surface-color: #ffffff;
+  --text-primary: #1f2421;
+  --text-muted: #596157;
+  --border-color: #e5e7eb;
+  --border-dark: #374151;
+  --accent-running: #047857;
+  --bg-running: #ecfdf5;
+  --accent-shutdown: #b91c1c;
+  --bg-shutdown: #fef2f2;
+  --accent-acquired: #1d4ed8;
+  --bg-acquired: #eff6ff;
+  --banner-bg: #fffbeb;
+  --banner-border: #fef3c7;
+  --link-color: #1d4ed8;
+  --link-hover: #1e40af;
+  --font-stack: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen-Sans, Ubuntu, Cantarell, "Helvetica Neue", sans-serif;
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: var(--font-stack);
+  background-color: var(--bg-color);
+  color: var(--text-primary);
+  line-height: 1.55;
+  font-size: 16px;
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+
+a {
+  color: var(--link-color);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+a:hover {
+  color: var(--link-hover);
+}
+
+.container {
+  width: 100%;
+  max-width: 960px;
+  margin: 0 auto;
+  padding: 0 16px;
+}
+
+/* Header & Navigation */
+header {
+  background-color: var(--surface-color);
+  border-bottom: 1px solid var(--border-color);
+  padding: 16px 0;
+}
+
+.header-inner {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+@media (min-width: 640px) {
+  .header-inner {
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+  }
+}
+
+.site-title {
+  font-size: 1.25rem;
+  font-weight: 700;
+  text-decoration: none;
+  color: var(--text-primary);
+}
+
+.site-nav {
+  display: flex;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+.site-nav a {
+  text-decoration: none;
+  color: var(--text-muted);
+  font-size: 0.95rem;
+  font-weight: 500;
+}
+
+.site-nav a:hover,
+.site-nav a.active {
+  color: var(--text-primary);
+  text-decoration: underline;
+}
+
+/* Notice Bar (Banner Ad Slot or Sample Alert) */
+.ad-slot-banner {
+  background-color: #f3f4f6;
+  border-bottom: 1px solid var(--border-color);
+  text-align: center;
+  padding: 10px 16px;
+  font-size: 0.85rem;
+  color: var(--text-muted);
+}
+
+.fixture-alert {
+  background-color: #fee2e2;
+  color: #991b1b;
+  border-bottom: 2px solid #ef4444;
+  padding: 8px 16px;
+  font-weight: bold;
+  text-align: center;
+  font-size: 0.9rem;
+}
+
+/* Main Content Layout */
+main {
+  flex: 1;
+  padding: 24px 0 40px;
+}
+
+h1 {
+  font-size: 1.75rem;
+  line-height: 1.25;
+  margin-bottom: 12px;
+  font-weight: 700;
+}
+
+h2 {
+  font-size: 1.35rem;
+  margin-top: 24px;
+  margin-bottom: 12px;
+  font-weight: 600;
+}
+
+h3 {
+  font-size: 1.1rem;
+  margin-top: 16px;
+  margin-bottom: 8px;
+  font-weight: 600;
+}
+
+p {
+  margin-bottom: 16px;
+}
+
+/* Neutral Notice Callout */
+.neutral-callout {
+  background-color: #f8fafc;
+  border-left: 4px solid var(--border-dark);
+  padding: 12px 16px;
+  margin: 16px 0 24px;
+  font-size: 0.95rem;
+  color: var(--text-muted);
+}
+
+/* Grid & Cards */
+.grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 16px;
+  margin: 20px 0;
+}
+
+@media (min-width: 640px) {
+  .grid-2 {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+.card {
+  background-color: var(--surface-color);
+  border: 1px solid var(--border-color);
+  border-radius: 4px;
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+}
+
+.card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 10px;
+  gap: 8px;
+}
+
+.card-title {
+  font-size: 1.15rem;
+  font-weight: 600;
+  text-decoration: none;
+  color: var(--text-primary);
+}
+
+.card-title:hover {
+  text-decoration: underline;
+}
+
+/* Equal Visual Weight Status Badges */
+.badge {
+  display: inline-block;
+  padding: 3px 8px;
+  font-size: 0.8rem;
+  font-weight: 600;
+  border-radius: 3px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  white-space: nowrap;
+  border: 1px solid currentColor;
+}
+
+.badge-running {
+  background-color: var(--bg-running);
+  color: var(--accent-running);
+}
+
+.badge-shut_down {
+  background-color: var(--bg-shutdown);
+  color: var(--accent-shutdown);
+}
+
+.badge-acquired {
+  background-color: var(--bg-acquired);
+  color: var(--accent-acquired);
+}
+
+.badge-unknown {
+  background-color: #f3f4f6;
+  color: var(--text-muted);
+}
+
+/* Metrics Table & Key-Value Rows */
+.metrics-list {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+  margin: 12px 0;
+  padding: 10px;
+  background-color: #f9fafb;
+  border-radius: 4px;
+}
+
+.metric-item {
+  font-size: 0.85rem;
+}
+
+.metric-label {
+  color: var(--text-muted);
+  display: block;
+}
+
+.metric-value {
+  font-weight: 600;
+  font-size: 0.95rem;
+  color: var(--text-primary);
+}
+
+.metric-not-found {
+  color: #9ca3af;
+  font-style: italic;
+  font-weight: normal;
+}
+
+/* Quotes in Case Detail */
+.verified-quote {
+  font-size: 0.85rem;
+  color: var(--text-muted);
+  font-style: italic;
+  margin-top: 4px;
+  border-left: 2px solid var(--border-color);
+  padding-left: 8px;
+}
+
+/* Lists */
+.factor-list {
+  margin: 8px 0 16px 20px;
+  font-size: 0.9rem;
+}
+
+.factor-list li {
+  margin-bottom: 6px;
+}
+
+/* Metadata Footer for Cards */
+.card-meta {
+  font-size: 0.8rem;
+  color: var(--text-muted);
+  margin-top: auto;
+  padding-top: 10px;
+  border-top: 1px solid var(--border-color);
+}
+
+/* Footer & Disclaimers */
+footer {
+  background-color: var(--surface-color);
+  border-top: 1px solid var(--border-color);
+  padding: 24px 0;
+  font-size: 0.85rem;
+  color: var(--text-muted);
+}
+
+.footer-disclaimer {
+  background-color: #f9fafb;
+  border: 1px solid var(--border-color);
+  padding: 12px;
+  margin-bottom: 16px;
+  border-radius: 4px;
+  line-height: 1.45;
+}
+
+.footer-nav {
+  display: flex;
+  gap: 16px;
+  flex-wrap: wrap;
+  margin-top: 8px;
+}

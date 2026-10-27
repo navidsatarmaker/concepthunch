@@ -1,0 +1,38 @@
+{
+  "id": "sample-cloudkitchen-mumbai",
+  "is_fixture": true,
+  "fixture_label": "SAMPLE – NOT REAL",
+  "business_name": "Sample Mumbai Biryani Cloud",
+  "business_type": "cloud-kitchen",
+  "city": "Mumbai",
+  "state": "Maharashtra",
+  "year_started": 2020,
+  "status": "shut_down",
+  "capital_invested_inr": 650000,
+  "capital_invested_inr_quote": "The venture started with capital expenditure of Rs 6.5 lakh in kitchen setup.",
+  "monthly_cost_inr": 110000,
+  "monthly_cost_inr_quote": "Monthly cash burn averaged Rs 1.1 lakh covering kitchen rental and aggregator commissions.",
+  "revenue_inr": null,
+  "revenue_period": null,
+  "revenue_inr_quote": null,
+  "profit_or_loss_inr": -450000,
+  "profit_or_loss_inr_quote": "The kitchen wound down operations having incurred net losses of Rs 4.5 lakh.",
+  "time_to_breakeven_months": null,
+  "time_to_breakeven_months_quote": null,
+  "what_worked": [
+    "Consistent packaging retained recurring weekend orders"
+  ],
+  "what_failed": [
+    "Delivery aggregator commission fees of 28% eroded gross margins",
+    "Customer acquisition cost on ad platforms increased threefold"
+  ],
+  "source_name": "Entrackr",
+  "source_url": "https://entrackr.com/sample-cloud-kitchen-closure",
+  "source_type": "news_reported",
+  "published_date": "2022-03-10",
+  "own_summary": "A delivery-only commercial kitchen in Mumbai ceased operations after 14 months. Rising customer acquisition costs and food delivery aggregator commissions led to net losses of 4.5 lakh INR on a 6.5 lakh INR starting capital.",
+  "verification": {
+    "quotes_verified": true,
+    "cross_checked": true
+  }
+}

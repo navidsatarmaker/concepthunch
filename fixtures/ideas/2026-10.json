@@ -1,0 +1,37 @@
+{
+  "report_month": "2026-10",
+  "generated_at": "2026-10-27",
+  "ranked_types": [],
+  "emerging_types": [
+    {
+      "slug": "tea-cafe",
+      "name": "Tea & Coffee Outlets",
+      "case_count": 3,
+      "description": "Quick service retail beverage kiosks and tea room outlets."
+    },
+    {
+      "slug": "cloud-kitchen",
+      "name": "Cloud Kitchens",
+      "case_count": 1,
+      "description": "Delivery-only food preparation facilities without dine-in seating."
+    }
+  ],
+  "list_1_most_documented": [],
+  "list_2_lowest_capital": [],
+  "list_3_fastest_breakeven": [],
+  "list_4_highest_shutdown": [],
+  "list_5_emerging": [
+    {
+      "slug": "tea-cafe",
+      "name": "Tea & Coffee Outlets",
+      "case_count": 3,
+      "description": "Quick service retail beverage kiosks and tea room outlets."
+    },
+    {
+      "slug": "cloud-kitchen",
+      "name": "Cloud Kitchens",
+      "case_count": 1,
+      "description": "Delivery-only food preparation facilities without dine-in seating."
+    }
+  ]
+}

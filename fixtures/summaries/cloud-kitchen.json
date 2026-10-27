@@ -1,0 +1,27 @@
+{
+  "business_type": "cloud-kitchen",
+  "case_count": 1,
+  "has_sufficient_data": false,
+  "outcomes": {
+    "running": 0,
+    "shut_down": 1,
+    "acquired": 0,
+    "unknown": 0
+  },
+  "capital_invested_inr": {
+    "min": 650000,
+    "median": 650000,
+    "max": 650000,
+    "count": 1
+  },
+  "monthly_cost_inr": {
+    "min": 110000,
+    "median": 110000,
+    "max": 110000,
+    "count": 1
+  },
+  "revenue_inr": null,
+  "time_to_breakeven_months": null,
+  "common_failure_reasons": [],
+  "updated_at": "2026-10-27"
+}

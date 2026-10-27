@@ -1,0 +1,32 @@
+[
+  {
+    "slug": "tea-cafe",
+    "name": "Tea & Coffee Outlets",
+    "category": "Food & Beverage",
+    "description": "Quick service retail beverage kiosks and tea room outlets."
+  },
+  {
+    "slug": "cloud-kitchen",
+    "name": "Cloud Kitchens",
+    "category": "Food & Beverage",
+    "description": "Delivery-only food preparation facilities without dine-in seating."
+  },
+  {
+    "slug": "ev-charging-station",
+    "name": "EV Charging Stations",
+    "category": "Clean Energy & Mobility",
+    "description": "Commercial public and semi-public electric vehicle charging infrastructure."
+  },
+  {
+    "slug": "direct-to-consumer-apparel",
+    "name": "D2C Apparel Brands",
+    "category": "Retail & E-commerce",
+    "description": "Direct-to-consumer online fashion, apparel, and lifestyle brands."
+  },
+  {
+    "slug": "logistics-fleet",
+    "name": "Intra-city Logistics Fleet",
+    "category": "Logistics & Supply Chain",
+    "description": "Commercial mini-truck and electric vehicle delivery fleets for last-mile logistics."
+  }
+]
