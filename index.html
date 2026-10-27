@@ -1,0 +1,332 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Daily Business Idea Generator</title>
+  <meta name="description" content="Tap to reveal fresh business ideas. No repeats. Copy or share instantly.">
+  <style>
+    :root {
+      --bg: #090a0f;
+      --card-bg: rgba(255, 255, 255, 0.05);
+      --card-border: rgba(255, 255, 255, 0.12);
+      --text-main: #f8fafc;
+      --text-muted: #94a3b8;
+      --accent: #38bdf8;
+      --accent-glow: rgba(56, 189, 248, 0.25);
+      --btn-bg: #1e293b;
+      --btn-hover: #334155;
+      --font: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      user-select: none;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    body {
+      font-family: var(--font);
+      background: radial-gradient(circle at 50% 20%, #1e1b4b 0%, var(--bg) 70%);
+      color: var(--text-main);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 24px;
+      overflow-x: hidden;
+    }
+
+    .container {
+      width: 100%;
+      max-width: 640px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+      gap: 24px;
+    }
+
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 6px 14px;
+      background: rgba(56, 189, 248, 0.1);
+      border: 1px solid rgba(56, 189, 248, 0.25);
+      border-radius: 9999px;
+      font-size: 0.85rem;
+      font-weight: 500;
+      color: var(--accent);
+      letter-spacing: 0.5px;
+    }
+
+    .card {
+      width: 100%;
+      min-height: 280px;
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
+      backdrop-filter: blur(16px);
+      border-radius: 24px;
+      padding: 36px 28px;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      cursor: pointer;
+      position: relative;
+      transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+      box-shadow: 0 20px 40px -15px rgba(0, 0, 0, 0.5);
+    }
+
+    .card:hover {
+      border-color: rgba(56, 189, 248, 0.4);
+      box-shadow: 0 0 35px var(--accent-glow);
+      transform: translateY(-2px);
+    }
+
+    .card:active {
+      transform: scale(0.985);
+    }
+
+    .idea-text {
+      font-size: 1.55rem;
+      line-height: 1.45;
+      font-weight: 600;
+      color: var(--text-main);
+      letter-spacing: -0.01em;
+      transition: opacity 0.2s ease, transform 0.2s ease;
+    }
+
+    .idea-text.fade {
+      opacity: 0;
+      transform: translateY(8px);
+    }
+
+    .tap-hint {
+      margin-top: 24px;
+      font-size: 0.85rem;
+      color: var(--text-muted);
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .actions {
+      display: flex;
+      gap: 12px;
+      width: 100%;
+      max-width: 400px;
+    }
+
+    .btn {
+      flex: 1;
+      padding: 14px 20px;
+      background: var(--btn-bg);
+      border: 1px solid var(--card-border);
+      color: var(--text-main);
+      border-radius: 14px;
+      font-size: 0.95rem;
+      font-weight: 600;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      transition: all 0.2s ease;
+    }
+
+    .btn:hover {
+      background: var(--btn-hover);
+      border-color: rgba(255, 255, 255, 0.25);
+    }
+
+    .btn:active {
+      transform: scale(0.96);
+    }
+
+    .counter {
+      font-size: 0.85rem;
+      color: var(--text-muted);
+    }
+
+    /* Toast notification */
+    .toast {
+      position: fixed;
+      bottom: 32px;
+      background: #0f172a;
+      border: 1px solid var(--accent);
+      color: #fff;
+      padding: 10px 20px;
+      border-radius: 9999px;
+      font-size: 0.85rem;
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.6);
+      opacity: 0;
+      transform: translateY(15px);
+      transition: all 0.25s ease;
+      pointer-events: none;
+    }
+
+    .toast.show {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="badge">💡 Fresh Ideas · Zero Repeats</div>
+
+    <div class="card" id="ideaCard" title="Tap to generate new idea">
+      <div class="idea-text" id="ideaText">Loading your first idea...</div>
+      <div class="tap-hint">👆 Tap anywhere on card for next idea</div>
+    </div>
+
+    <div class="actions">
+      <button class="btn" id="copyBtn">
+        📋 Copy Idea
+      </button>
+      <button class="btn" id="shareBtn">
+        📤 Share Idea
+      </button>
+    </div>
+
+    <div class="counter" id="counterText">Idea 1 of ...</div>
+  </div>
+
+  <div class="toast" id="toast">Copied to clipboard!</div>
+
+  <script>
+    let ideasPool = [];
+    let currentIndex = 0;
+    let shuffledQueue = [];
+
+    const ideaText = document.getElementById("ideaText");
+    const ideaCard = document.getElementById("ideaCard");
+    const copyBtn = document.getElementById("copyBtn");
+    const shareBtn = document.getElementById("shareBtn");
+    const counterText = document.getElementById("counterText");
+    const toast = document.getElementById("toast");
+
+    function showToast(msg) {
+      toast.textContent = msg;
+      toast.classList.add("show");
+      setTimeout(() => toast.classList.remove("show"), 2000);
+    }
+
+    function shuffle(array) {
+      const arr = [...array];
+      for (let i = arr.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [arr[i], arr[j]] = [arr[j], arr[i]];
+      }
+      return arr;
+    }
+
+    async function loadIdeas() {
+      try {
+        const res = await fetch("ideas.json");
+        ideasPool = await res.json();
+      } catch (e) {
+        // Fallback default list
+        ideasPool = [
+          "On-demand mobile EV charging van servicing stranded cars in IT corridors.",
+          "Subscription-based deep home cleaning and upholstery sanitization for tier-2 city apartments.",
+          "Curated regional pickle and indigenous spice subscription boxes sourced directly from village cooperatives.",
+          "B2B zero-waste compost collection and organic fertilizer return service for apartment societies.",
+          "Pre-cut, pre-washed organic regional cooking vegetable boxes delivered daily at 6 AM."
+        ];
+      }
+
+      // Check localStorage for seen items to guarantee NO repeats across sessions
+      const seenRaw = localStorage.getItem("seen_ideas_set");
+      let seenSet = new Set(seenRaw ? JSON.parse(seenRaw) : []);
+
+      // Filter out seen ideas
+      let remaining = ideasPool.filter(id => !seenSet.has(id));
+
+      if (remaining.length === 0) {
+        // When all ideas have been viewed once, reset seen pool automatically
+        seenSet.clear();
+        localStorage.removeItem("seen_ideas_set");
+        remaining = [...ideasPool];
+      }
+
+      shuffledQueue = shuffle(remaining);
+      currentIndex = 0;
+      displayNextIdea();
+    }
+
+    function displayNextIdea() {
+      if (shuffledQueue.length === 0) {
+        ideaText.textContent = "You've viewed all ideas! Tap to restart the cycle.";
+        counterText.textContent = "All ideas explored";
+        localStorage.removeItem("seen_ideas_set");
+        shuffledQueue = shuffle(ideasPool);
+        return;
+      }
+
+      ideaText.classList.add("fade");
+      setTimeout(() => {
+        const currentIdea = shuffledQueue.pop();
+
+        // Mark as seen in localStorage
+        const seenRaw = localStorage.getItem("seen_ideas_set");
+        const seenArr = seenRaw ? JSON.parse(seenRaw) : [];
+        if (!seenArr.includes(currentIdea)) {
+          seenArr.push(currentIdea);
+          localStorage.setItem("seen_ideas_set", JSON.stringify(seenArr));
+        }
+
+        ideaText.textContent = currentIdea;
+        ideaText.classList.remove("fade");
+
+        counterText.textContent = `Showing Idea ${seenArr.length} of ${ideasPool.length} (Zero repeats)`;
+      }, 150);
+    }
+
+    // Tap card for next idea
+    ideaCard.addEventListener("click", displayNextIdea);
+
+    // Copy to clipboard
+    copyBtn.addEventListener("click", (e) => {
+      e.stopPropagation();
+      const text = ideaText.textContent;
+      if (!text || text.includes("Loading")) return;
+      navigator.clipboard.writeText(text).then(() => {
+        showToast("Copied idea to clipboard! 📋");
+      }).catch(() => {
+        showToast("Press Ctrl+C to copy");
+      });
+    });
+
+    // Native Web Share or fallback
+    shareBtn.addEventListener("click", async (e) => {
+      e.stopPropagation();
+      const text = ideaText.textContent;
+      if (!text || text.includes("Loading")) return;
+
+      if (navigator.share) {
+        try {
+          await navigator.share({
+            title: "Business Idea",
+            text: `💡 Business Idea: "${text}"`,
+            url: window.location.href
+          });
+        } catch (err) {
+          // User dismissed share dialog
+        }
+      } else {
+        navigator.clipboard.writeText(`💡 Business Idea: "${text}" - ${window.location.href}`);
+        showToast("Link & idea copied to share! 🚀");
+      }
+    });
+
+    // Load ideas on startup
+    loadIdeas();
+  </script>
+</body>
+</html>
