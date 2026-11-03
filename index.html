@@ -194,7 +194,7 @@
       </button>
     </div>
 
-    <div class="counter" id="counterText">Idea 1 of 1,550+ (Zero repeats)</div>
+    <div class="counter" id="counterText">Idea 1 of 10,000+ (Zero repeats)</div>
   </div>
 
   <div class="toast" id="toast">Copied to clipboard!</div>
@@ -340,8 +340,8 @@
         ideaText.textContent = chosenIdea;
         ideaText.classList.remove("fade");
 
-        const displayTotal = ideasPool.length > 0 ? ideasPool.length : 1550;
-        const currentCount = seenIndices.size > 0 ? seenIndices.size : totalShownCount;
+        const displayTotal = ideasPool.length > 0 ? ideasPool.length.toLocaleString() : "10,000";
+        const currentCount = seenIndices.size > 0 ? seenIndices.size.toLocaleString() : totalShownCount.toLocaleString();
         counterText.textContent = `Idea ${currentCount} explored of ${displayTotal}+ (Zero repeats)`;
       }, 150);
     }
