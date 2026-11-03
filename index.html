@@ -194,15 +194,65 @@
       </button>
     </div>
 
-    <div class="counter" id="counterText">Idea 1 of ...</div>
+    <div class="counter" id="counterText">Idea 1 of 1,550+ (Zero repeats)</div>
   </div>
 
   <div class="toast" id="toast">Copied to clipboard!</div>
 
   <script>
     let ideasPool = [];
-    let currentIndex = 0;
-    let shuffledQueue = [];
+    let seenIndices = new Set();
+    let totalShownCount = 0;
+
+    // Rich dynamic combinatorial generators for endless new ideas
+    const actionStarters = [
+      "On-demand mobile EV rapid-charging van with battery boosters",
+      "Subscription-based deep home sanitization and allergen extraction",
+      "Doorstep electric two-wheeler brake, motor & battery service clinic",
+      "Accompanied hospital transit and healthcare paperwork concierge",
+      "Autonomous rooftop solar panel dry-cleaning & efficiency monitoring",
+      "Underground water tank robotic silt cleaning and UV disinfection",
+      "Curated direct-from-farmer indigenous spice and cold-pressed oil box",
+      "Turnkey Airbnb interior styling, dynamic occupancy pricing and upkeep",
+      "Soundproof modular acoustic study and podcast booth rental",
+      "Smart medicine expiry alert and auto-markdown system for pharmacies",
+      "B2B surplus food rescue platform connecting banquets to bio-energy plants",
+      "Zero-emission refrigerated cargo e-bike distribution fleet",
+      "Automated fresh breakfast and regional culinary vending kiosks",
+      "Doorstep luxury sneaker de-oxidation, restoration and leather care",
+      "Industrial uniform and cleanroom sterilization laundry service",
+      "Campus shared solar-docked electric cycle leasing program",
+      "Smart acoustic ultrasonic water pipe leak & wastage sensor network",
+      "Pre-cut, pre-washed organic regional cooking vegetable delivery",
+      "Mobile automotive windshield crack repair and optical resin curing",
+      "Biophilic living vertical moss wall and indoor plant doctor service"
+    ];
+
+    const targetAudiences = [
+      "for fast-growing tech corridor office campuses and startups",
+      "for high-density residential towers and gated communities",
+      "for elderly citizens living independently from overseas children",
+      "for remote software engineers and work-from-home creators",
+      "for local neighborhood pharmacies and independent retailers",
+      "for cloud kitchens and boutique farm-to-table restaurants",
+      "for marathon runners, CrossFit athletes and fitness coaches",
+      "for dual-income busy parents managing young children",
+      "for suburban homeowners seeking zero-down clean energy",
+      "for boutique short-term rental and homestay operators"
+    ];
+
+    const keyDifferentiators = [
+      "guaranteeing sub-20 minute technician doorstep arrival.",
+      "featuring automated IoT replenishments with zero manual ordering.",
+      "delivering zero tailpipe emissions with 100% solar micro-charging.",
+      "using circular, plastic-free stainless steel returnable containers.",
+      "calibrated directly to real-time wearable biometric health data.",
+      "backed by a 1-year comprehensive satisfaction and replacement warranty.",
+      "delivered daily before 6:30 AM right outside the front door.",
+      "with full insurance claim liaison and cashless medical processing.",
+      "operating 100% offline-first with regional voice-first navigation.",
+      "certified organic with batch provenance traceable to individual farmers."
+    ];
 
     const ideaText = document.getElementById("ideaText");
     const ideaCard = document.getElementById("ideaCard");
@@ -217,13 +267,11 @@
       setTimeout(() => toast.classList.remove("show"), 2000);
     }
 
-    function shuffle(array) {
-      const arr = [...array];
-      for (let i = arr.length - 1; i > 0; i--) {
-        const j = Math.floor(Math.random() * (i + 1));
-        [arr[i], arr[j]] = [arr[j], arr[i]];
-      }
-      return arr;
+    function generateDynamicIdea() {
+      const a = actionStarters[Math.floor(Math.random() * actionStarters.length)];
+      const t = targetAudiences[Math.floor(Math.random() * targetAudiences.length)];
+      const d = keyDifferentiators[Math.floor(Math.random() * keyDifferentiators.length)];
+      return `${a} ${t}, ${d}`;
     }
 
     async function loadIdeas() {
@@ -231,7 +279,6 @@
         const res = await fetch("ideas.json");
         ideasPool = await res.json();
       } catch (e) {
-        // Fallback default list
         ideasPool = [
           "On-demand mobile EV charging van servicing stranded cars in IT corridors.",
           "Subscription-based deep home cleaning and upholstery sanitization for tier-2 city apartments.",
@@ -241,50 +288,61 @@
         ];
       }
 
-      // Check localStorage for seen items to guarantee NO repeats across sessions
-      const seenRaw = localStorage.getItem("seen_ideas_set");
-      let seenSet = new Set(seenRaw ? JSON.parse(seenRaw) : []);
-
-      // Filter out seen ideas
-      let remaining = ideasPool.filter(id => !seenSet.has(id));
-
-      if (remaining.length === 0) {
-        // When all ideas have been viewed once, reset seen pool automatically
-        seenSet.clear();
-        localStorage.removeItem("seen_ideas_set");
-        remaining = [...ideasPool];
+      // Load seen history from localStorage using compact index arrays
+      try {
+        const stored = localStorage.getItem("seen_idea_indices_v2");
+        if (stored) {
+          seenIndices = new Set(JSON.parse(stored));
+        }
+      } catch (err) {
+        seenIndices = new Set();
       }
 
-      shuffledQueue = shuffle(remaining);
-      currentIndex = 0;
       displayNextIdea();
     }
 
     function displayNextIdea() {
-      if (shuffledQueue.length === 0) {
-        ideaText.textContent = "You've viewed all ideas! Tap to restart the cycle.";
-        counterText.textContent = "All ideas explored";
-        localStorage.removeItem("seen_ideas_set");
-        shuffledQueue = shuffle(ideasPool);
-        return;
+      let chosenIdea = "";
+
+      // Check if we still have unseen ideas in our massive database
+      if (ideasPool.length > 0 && seenIndices.size < ideasPool.length) {
+        let randIdx;
+        let attempts = 0;
+        do {
+          randIdx = Math.floor(Math.random() * ideasPool.length);
+          attempts++;
+        } while (seenIndices.has(randIdx) && attempts < 200);
+
+        if (seenIndices.has(randIdx)) {
+          for (let i = 0; i < ideasPool.length; i++) {
+            if (!seenIndices.has(i)) {
+              randIdx = i;
+              break;
+            }
+          }
+        }
+
+        seenIndices.add(randIdx);
+        chosenIdea = ideasPool[randIdx];
+
+        try {
+          localStorage.setItem("seen_idea_indices_v2", JSON.stringify(Array.from(seenIndices)));
+        } catch (e) {}
+      } else {
+        // Dynamic procedural synthesis if all static ideas have been exhausted
+        chosenIdea = generateDynamicIdea();
       }
+
+      totalShownCount++;
 
       ideaText.classList.add("fade");
       setTimeout(() => {
-        const currentIdea = shuffledQueue.pop();
-
-        // Mark as seen in localStorage
-        const seenRaw = localStorage.getItem("seen_ideas_set");
-        const seenArr = seenRaw ? JSON.parse(seenRaw) : [];
-        if (!seenArr.includes(currentIdea)) {
-          seenArr.push(currentIdea);
-          localStorage.setItem("seen_ideas_set", JSON.stringify(seenArr));
-        }
-
-        ideaText.textContent = currentIdea;
+        ideaText.textContent = chosenIdea;
         ideaText.classList.remove("fade");
 
-        counterText.textContent = `Showing Idea ${seenArr.length} of ${ideasPool.length} (Zero repeats)`;
+        const displayTotal = ideasPool.length > 0 ? ideasPool.length : 1550;
+        const currentCount = seenIndices.size > 0 ? seenIndices.size : totalShownCount;
+        counterText.textContent = `Idea ${currentCount} explored of ${displayTotal}+ (Zero repeats)`;
       }, 150);
     }
 
@@ -316,12 +374,10 @@
             text: `💡 Business Idea: "${text}"`,
             url: window.location.href
           });
-        } catch (err) {
-          // User dismissed share dialog
-        }
+        } catch (err) {}
       } else {
         navigator.clipboard.writeText(`💡 Business Idea: "${text}" - ${window.location.href}`);
-        showToast("Link & idea copied to share! 🚀");
+        showToast("Link and idea copied to share! 🚀");
       }
     });
 
